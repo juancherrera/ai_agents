@@ -1,0 +1,9 @@
+# protien_food_finder
+
+Source contribution: [3_crew/community_contributions/protien_food_finder](../../../../../3_crew/community_contributions/protien_food_finder).
+
+## Modules and project workflow
+
+[Walkthrough](project/walkthrough.md) · [Practice notebook](project/practice.ipynb)
+
+These exercises isolate visible concepts using fictional data. No original contribution is launched by the practice notebook. Follow its source README for deliberate integration setup.

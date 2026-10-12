@@ -1,0 +1,36 @@
+# A guardrail makes a stop/continue decision
+
+An input guardrail checks a request before later work. The tripwire is a boolean. This deterministic example teaches the branch; it is not the model-based name detector in the source.
+
+**Practice prompt:** Does Alice trigger this demonstration guardrail?
+
+## Official course and guides
+
+- [2_openai/3_lab3.ipynb](../course/week-02-openai-agents/3-lab3/walkthrough.md) · [Practice](../course/week-02-openai-agents/3-lab3/practice.ipynb)
+
+## Community variants
+
+- [2_openai/community_contributions/1_medreach_hcp_campaign/01_medreach.ipynb](../community/week-02-openai-agents/1-medreach-hcp-campaign-1ad370/notebooks/01-medreach-48b6ee/walkthrough.md) · [Practice](../community/week-02-openai-agents/1-medreach-hcp-campaign-1ad370/notebooks/01-medreach-48b6ee/practice.ipynb)
+- [2_openai/community_contributions/3_lab3_with_pushover_notifications.ipynb](../community/week-02-openai-agents/3-lab3-with-pushover-notifications-3f4f88/notebooks/3-lab3-with-pushover-notifications-3f4f88/walkthrough.md) · [Practice](../community/week-02-openai-agents/3-lab3-with-pushover-notifications-3f4f88/notebooks/3-lab3-with-pushover-notifications-3f4f88/practice.ipynb)
+- [2_openai/community_contributions/elchanio76/3_lab3_tools.ipynb](../community/week-02-openai-agents/elchanio76-993b37/notebooks/3-lab3-tools-19956c/walkthrough.md) · [Practice](../community/week-02-openai-agents/elchanio76-993b37/notebooks/3-lab3-tools-19956c/practice.ipynb)
+- [2_openai/community_contributions/kisali/3_lab3_multi-llm.ipynb](../community/week-02-openai-agents/kisali-6f9d6d/notebooks/3-lab3-multi-llm-9a2b6c/walkthrough.md) · [Practice](../community/week-02-openai-agents/kisali-6f9d6d/notebooks/3-lab3-multi-llm-9a2b6c/practice.ipynb)
+- [2_openai/community_contributions/lab3_exercise_adriana.ipynb](../community/week-02-openai-agents/lab3-exercise-adriana-ff9ee6/notebooks/lab3-exercise-adriana-ff9ee6/walkthrough.md) · [Practice](../community/week-02-openai-agents/lab3-exercise-adriana-ff9ee6/notebooks/lab3-exercise-adriana-ff9ee6/practice.ipynb)
+- [2_openai/community_contributions/lab3_structuredemail.ipynb](../community/week-02-openai-agents/lab3-structuredemail-62d377/notebooks/lab3-structuredemail-62d377/walkthrough.md) · [Practice](../community/week-02-openai-agents/lab3-structuredemail-62d377/notebooks/lab3-structuredemail-62d377/practice.ipynb)
+- [2_openai/community_contributions/meetings_reminder.ipynb](../community/week-02-openai-agents/meetings-reminder-4787ae/notebooks/meetings-reminder-4787ae/walkthrough.md) · [Practice](../community/week-02-openai-agents/meetings-reminder-4787ae/notebooks/meetings-reminder-4787ae/practice.ipynb)
+- [2_openai/community_contributions/mutual_fund_report_researcher.ipynb](../community/week-02-openai-agents/mutual-fund-report-researcher-0090e2/notebooks/mutual-fund-report-researcher-0090e2/walkthrough.md) · [Practice](../community/week-02-openai-agents/mutual-fund-report-researcher-0090e2/notebooks/mutual-fund-report-researcher-0090e2/practice.ipynb)
+- [2_openai/community_contributions/seung-gu/3_lab3.ipynb](../community/week-02-openai-agents/seung-gu-b42cad/notebooks/3-lab3-624d18/walkthrough.md) · [Practice](../community/week-02-openai-agents/seung-gu-b42cad/notebooks/3-lab3-624d18/practice.ipynb)
+- [2_openai/community_contributions/workflow_patterns/4-Orchestration_Workers/orchestration_workers.ipynb](../community/week-02-openai-agents/workflow-patterns-470b07/notebooks/orchestration-workers-5a6195/walkthrough.md) · [Practice](../community/week-02-openai-agents/workflow-patterns-470b07/notebooks/orchestration-workers-5a6195/practice.ipynb)
+- [2_openai/community_contributions/Book Writer with Agents](../community/week-02-openai-agents/book-writer-with-agents-fe4447/project/walkthrough.md) · [Practice](../community/week-02-openai-agents/book-writer-with-agents-fe4447/project/practice.ipynb)
+- [2_openai/community_contributions/deep-research_clarifying_evaluator_agentic_pattern](../community/week-02-openai-agents/deep-research-clarifying-evaluator-age-8a00f7/project/walkthrough.md) · [Practice](../community/week-02-openai-agents/deep-research-clarifying-evaluator-age-8a00f7/project/practice.ipynb)
+- [2_openai/community_contributions/deep_research_with_email_input_and_guardrail](../community/week-02-openai-agents/deep-research-with-email-input-and-gua-ca763b/project/walkthrough.md) · [Practice](../community/week-02-openai-agents/deep-research-with-email-input-and-gua-ca763b/project/practice.ipynb)
+- [2_openai/community_contributions/deep_research_with_guardrail](../community/week-02-openai-agents/deep-research-with-guardrail-67d543/project/walkthrough.md) · [Practice](../community/week-02-openai-agents/deep-research-with-guardrail-67d543/project/practice.ipynb)
+- [2_openai/community_contributions/deep_research_withsessions](../community/week-02-openai-agents/deep-research-withsessions-4f2087/project/walkthrough.md) · [Practice](../community/week-02-openai-agents/deep-research-withsessions-4f2087/project/practice.ipynb)
+- [2_openai/community_contributions/drawing_agents](../community/week-02-openai-agents/drawing-agents-ef3e75/project/walkthrough.md) · [Practice](../community/week-02-openai-agents/drawing-agents-ef3e75/project/practice.ipynb)
+- [2_openai/community_contributions/medical_deep_research](../community/week-02-openai-agents/medical-deep-research-6bcda3/project/walkthrough.md) · [Practice](../community/week-02-openai-agents/medical-deep-research-6bcda3/project/practice.ipynb)
+- [2_openai/community_contributions/Safe_Customer_Support](../community/week-02-openai-agents/safe-customer-support-7e0b0f/project/walkthrough.md) · [Practice](../community/week-02-openai-agents/safe-customer-support-7e0b0f/project/practice.ipynb)
+- [2_openai/community_contributions/Tools_Usage_Experiments](../community/week-02-openai-agents/tools-usage-experiments-ecf64b/project/walkthrough.md) · [Practice](../community/week-02-openai-agents/tools-usage-experiments-ecf64b/project/practice.ipynb)
+- [2_openai/community_contributions/url_security_advisor_gradio_sb](../community/week-02-openai-agents/url-security-advisor-gradio-sb-115298/project/walkthrough.md) · [Practice](../community/week-02-openai-agents/url-security-advisor-gradio-sb-115298/project/practice.ipynb)
+- [2_openai/community_contributions/workflow_patterns](../community/week-02-openai-agents/workflow-patterns-470b07/project/walkthrough.md) · [Practice](../community/week-02-openai-agents/workflow-patterns-470b07/project/practice.ipynb)
+- [3_crew/community_contributions/data_science_help](../community/week-03-crewai/data-science-help-8a9573/project/walkthrough.md) · [Practice](../community/week-03-crewai/data-science-help-8a9573/project/practice.ipynb)
+- [3_crew/community_contributions/financial_researcher_guard](../community/week-03-crewai/financial-researcher-guard-675e3c/project/walkthrough.md) · [Practice](../community/week-03-crewai/financial-researcher-guard-675e3c/project/practice.ipynb)
+- [4_langgraph/community_contributions/sidekick_juan](../community/week-04-langgraph/sidekick-juan-5a235e/project/walkthrough.md) · [Practice](../community/week-04-langgraph/sidekick-juan-5a235e/project/practice.ipynb)
