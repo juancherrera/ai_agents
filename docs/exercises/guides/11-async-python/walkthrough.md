@@ -76,6 +76,101 @@ Calling an async function without awaiting or scheduling its coroutine does not 
 
 Add `work("three")` to `gather`. Expected final list: `['ONE', 'TWO', 'THREE']`. Then replace `gather` with three sequential awaits and observe the difference in the start/end messages. Do not infer a performance guarantee from this tiny timing simulation.
 
+## Instructor code, included here
+
+These are the code examples from the local guide, in their original order, so you can compare the instructor's syntax with the explanations above without opening another file. These excerpts can depend on earlier definitions. The complete teaching examples above include their own inputs.
+
+Source examples that intentionally fail, run indefinitely, download software, or contact a service are labeled below. Hosted configuration reads have been changed to your explicit `.environment/.env` path; credential values are never included.
+
+### And now some examples:
+
+Notebook async example: await runs a coroutine; a bare call only creates it. The complete scripts above show where asyncio.run belongs.
+
+```python
+# Let's define an async function
+
+import asyncio
+
+async def do_some_work():
+    print("Starting work")
+    await asyncio.sleep(1)
+    print("Work complete")
+```
+
+### And now some examples:
+
+Read the comments and follow each assignment to its next use. Any name not defined here comes from an earlier example in this section.
+
+```python
+# What will this do?
+
+do_some_work()
+```
+
+### And now some examples:
+
+Notebook async example: await runs a coroutine; a bare call only creates it. The complete scripts above show where asyncio.run belongs.
+
+```python
+# OK let's try that again!
+
+await do_some_work()
+```
+
+### And now some examples:
+
+Notebook async example: await runs a coroutine; a bare call only creates it. The complete scripts above show where asyncio.run belongs.
+
+```python
+# What's wrong with this?
+
+async def do_a_lot_of_work():
+    do_some_work()
+    do_some_work()
+    do_some_work()
+
+await do_a_lot_of_work()
+```
+
+### And now some examples:
+
+Notebook async example: await runs a coroutine; a bare call only creates it. The complete scripts above show where asyncio.run belongs.
+
+```python
+# Interesting warning! Let's fix it
+
+async def do_a_lot_of_work():
+    await do_some_work()
+    await do_some_work()
+    await do_some_work()
+
+await do_a_lot_of_work()
+```
+
+### And now some examples:
+
+Notebook async example: await runs a coroutine; a bare call only creates it. The complete scripts above show where asyncio.run belongs.
+
+```python
+# And now let's do it in parallel
+# It's important to recognize that this is not "multi-threading" in the way that you may be used to
+# The asyncio library is running on a single thread, but it's using a loop to switch between tasks while one is waiting
+
+async def do_a_lot_of_work_in_parallel():
+    await asyncio.gather(do_some_work(), do_some_work(), do_some_work())
+
+await do_a_lot_of_work_in_parallel()
+```
+
+### Finally - try writing a python module that calls do_a_lot_of_work_in_parallel
+
+Read the comments and follow each assignment to its next use. Any name not defined here comes from an earlier example in this section.
+
+```python
+if __name__ == "__main__":
+    asyncio.run(do_a_lot_of_work_in_parallel())
+```
+
 ---
 
 Source: [11_async_python.ipynb](../../../../guides/11_async_python.ipynb). This lesson expands the locally documented topics with teaching examples; linked external briefings were not used as source contents.
