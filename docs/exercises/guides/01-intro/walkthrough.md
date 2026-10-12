@@ -1,51 +1,48 @@
-# Choose a learning route
+# 01 · How to study this course
 
-Source: [guides/01_intro.ipynb](../../../../guides/01_intro.ipynb). Practice: [commented notebook](practice.ipynb).
+The course builds programs that send requests to models, use tools, and check results. Learn one piece at a time: understand the input, follow the transformation, then inspect the output. You already know programming; the new parts are Python's syntax and the model/tool workflow.
 
-Cell positions below count all cells, including Markdown. They are not execution counts. The map was extracted from local source cells, never their saved outputs.
+## Start with a small, visible transformation
 
-## Follow the flow
+Run this whole block in a notebook or save it as `lesson.py` and run it with Python:
 
-Identify prerequisites → choose a guide → practice one concept → return to its course lesson.
+```python
+def make_message(question):
+    # A dictionary stores named fields, like an object/map in other languages.
+    return {"role": "user", "content": question}
 
-**Before source execution:** This notebook is a local guide index. External linked conversations are not extracted or verified by this pack.
+message = make_message("What is 2 + 2?")
+print(message["role"])
+print(message["content"])
+```
 
-Study one concept per sitting. Predict a value, run the corresponding practice cell, explain it, then change one input. If state becomes confusing, restart the practice kernel and run from the top.
+Output:
 
-## Concepts to understand
+```text
+user
+What is 2 + 2?
+```
 
-### Evaluate a small prototype with a fixed dataset
+`def` declares a function. The colon starts its body; indentation determines which statements belong to it. `return` sends the dictionary back to the caller. Square brackets retrieve a field. This is the kind of message later passed to a model; this example only constructs data, so no model or token is needed.
 
-Choose a success measure before comparing approaches. Use a small curated set so you can reproduce failures. Scores below describe fictional fixtures, not real model performance.
+## Use the same study loop on each example
 
-**Ask yourself:** Which fixture scores better, and what does the score actually measure?
+1. Predict the printed result before running it.
+2. Run the complete example.
+3. Change one input and run again.
+4. Explain why the output changed in your own words.
+5. Rebuild the example without looking at the answer.
 
-**Practice:** Add a case where a correct paraphrase differs from the expected string. Explain why exact-match scoring may be insufficient.
+If an example fails, keep the exact error and the smallest code that produces it. That gives you something concrete to investigate instead of replaying a whole lecture.
 
-### Notebook state follows execution order
+## Practice
 
-A kernel is a Python process with variables in memory. The order you execute cells determines the values. Restarting removes that state.
+Change the question to `Summarize this invoice`. Keep the role as `user`. The second printed line should be your new question. Then add `print(type(message).__name__)`; the result is `dict`.
 
-**Ask yourself:** Will changing fruit rebuild the previously formed string?
+The guide order is setup → Python → debugging → model connections → intermediate Python → async → your own project. Return to a topic when the course starts using it; you do not have to memorize every feature first.
 
-**Practice:** Split these statements into separate cells. Rerun them in different orders, then restart and run from the top.
+---
 
-## Follow the source in order
+Source: [01_intro.ipynb](../../../../guides/01_intro.ipynb). This lesson expands the locally documented topics with teaching examples; linked external briefings were not used as source contents.
 
-### Cell 1: Welcome to the Guides!
-
-Read this before the next code cell. If it contains an assignment, restate the expected result before writing code. External pages linked here have not been extracted.
-
-### Cell 2: Introduction
-
-Read this before the next code cell. If it contains an assignment, restate the expected result before writing code. External pages linked here have not been extracted.
-
-### Cell 3: Contents (select from the sub-directory in the explorer on the left)
-
-Read this before the next code cell. If it contains an assignment, restate the expected result before writing code. External pages linked here have not been extracted.
-
-## Finish check
-
-Explain the inputs, state changes, and stopping rule in your own words. Identify where model calls and external actions begin. A passing practice fixture does not prove the original hosted workflow works.
-
-[Explicit .environment/.env loading and troubleshooting](../../configuration.md)
+Optional: [practice notebook](practice.ipynb) · [all guide lessons](../README.md).

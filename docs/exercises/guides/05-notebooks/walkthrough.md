@@ -1,187 +1,72 @@
-# Kernel state and cell execution order
+# 05 · Understand notebook execution
 
-Source: [guides/05_notebooks.ipynb](../../../../guides/05_notebooks.ipynb). Practice: [commented notebook](practice.ipynb).
+A notebook combines explanations with executable Python. The kernel is the running Python process holding your variables. What matters is the order you execute code, which can differ from the order shown on the page.
 
-Cell positions below count all cells, including Markdown. They are not execution counts. The map was extracted from local source cells, never their saved outputs.
+## Watch a variable change
 
-## Follow the flow
+Run this complete example:
 
-Execute one cell → inspect variable → change it → rerun an earlier cell → restart kernel → clear stored outputs.
+```python
+fruit = "apple"
+print(fruit)
+fruit = "pear"  # Assignment replaces the value attached to this name.
+print(fruit)
+print(2 + 2)
+```
 
-**Before source execution:** Source shell ping and long sleep examples are not run by practice. Saved outputs can contain private data; keep practice output clean before sharing.
+Output is `apple`, `pear`, then `4`, on separate lines. A notebook also displays the final expression automatically, but `print` makes the result visible in both a notebook and a script.
 
-Study one concept per sitting. Predict a value, run the corresponding practice cell, explain it, then change one input. If state becomes confusing, restart the practice kernel and run from the top.
+Now try this notebook experiment: put `fruit = "apple"` in one runnable block and `print(fruit)` in the next. Execute both, then execute `fruit = "pear"` elsewhere. Running the print block again shows `pear`. The kernel remembers the most recent assignment; it does not reread the earlier assignment automatically.
 
-## Concepts to understand
+## Make hidden state visible
 
-### Notebook state follows execution order
+```python
+# A complete example defines its own inputs before using them.
+fruits = ["apple", "pear"]
+for fruit in fruits:
+    print(fruit.upper())
+```
 
-A kernel is a Python process with variables in memory. The order you execute cells determines the values. Restarting removes that state.
+Output: `APPLE`, then `PEAR`. `for` repeats its indented body for each item. `.upper()` returns a new uppercase string.
 
-**Ask yourself:** Will changing fruit rebuild the previously formed string?
+Restart the kernel and run your notebook from top to bottom. If a name now raises `NameError`, its definition was missing or executed out of order. Saved output is only a previous result; it does not recreate variables after a restart.
 
-**Practice:** Split these statements into separate cells. Rerun them in different orders, then restart and run from the top.
+## Python, Markdown, and terminal commands have different jobs
 
-### Working directory vs. source directory
+Python blocks execute code. Markdown blocks display text, headings, and formatted code. In a Python notebook, a leading `!` runs a terminal command, for example `!git status --short`. That syntax is specific to IPython; it is not valid in a normal `.py` file.
 
-Relative paths start at the process working directory. They do not automatically start next to a notebook. This example inspects paths only and never creates or deletes files.
+To inspect files in portable Python, use this instead:
 
-**Ask yourself:** What folder is the starting point for Path(".")?
+```python
+from pathlib import Path
 
-**Practice:** Compare the path from the repository root with the path from a week folder. Explain why cd changes relative-file behavior.
+folder = Path(r"C:\src\github_pub\ai_agents\guides")
+print(folder.name)
+print(folder.is_dir())
+```
 
-### Streaming sends partial progress
+In this repository, output is `guides`, then `True`.
 
-A generator yields multiple updates. A streamed API can include multiple event types, so a UI should select the text events rather than assume every event is text.
+## Display formatted text and bounded progress
 
-**Ask yourself:** How many text chunks are selected?
+```python
+from IPython.display import Markdown, display
+from tqdm.auto import tqdm
 
-**Practice:** Insert a non-text event between the chunks. Confirm it does not become displayed answer text.
+display(Markdown("**Practice complete**"))
+for number in tqdm(range(3), desc="Practice"):
+    result = number * 2
+print(result)
+```
 
-## Follow the source in order
+In a notebook, the first line appears bold and the loop shows a progress indicator. The last printed value is `4`: `range(3)` produces `0`, `1`, and `2`. A bounded loop completes on its own; interrupt a long-running example with the stop button.
 
-### Cell 1: Notebooks in Cursor
+## Practice
 
-Read this before the next code cell. If it contains an assignment, restate the expected result before writing code. External pages linked here have not been extracted.
+Change `range(3)` to `range(5)`. Predict the final value before running: `8`. Restart the kernel and run the complete example again; the result should be the same.
 
-### Cell 2: code
+---
 
-- Inspect the evaluated value or expression; displaying it does not necessarily modify state.
+Source: [05_notebooks.ipynb](../../../../guides/05_notebooks.ipynb). This lesson expands the locally documented topics with teaching examples; linked external briefings were not used as source contents.
 
-**Pause:** which values does this cell require from earlier cells, and what value or side effect does it produce? Run the offline adaptation before the source.
-
-### Cell 3: Congrats!
-
-Read this before the next code cell. If it contains an assignment, restate the expected result before writing code. External pages linked here have not been extracted.
-
-### Cell 4: code
-
-- Store expression result in `favorite_fruit`. Re-executing this cell updates kernel state.
-
-**Pause:** which values does this cell require from earlier cells, and what value or side effect does it produce? Run the offline adaptation before the source.
-
-### Cell 5: code
-
-- Inspect the evaluated value or expression; displaying it does not necessarily modify state.
-
-**Pause:** which values does this cell require from earlier cells, and what value or side effect does it produce? Run the offline adaptation before the source.
-
-### Cell 6: code
-
-- `print`: Show diagnostic output; this does not replace returning a callback result.
-
-**Pause:** which values does this cell require from earlier cells, and what value or side effect does it produce? Run the offline adaptation before the source.
-
-### Cell 7: code
-
-- Store formatted string in `favorite_fruit`. Re-executing this cell updates kernel state.
-
-**Pause:** which values does this cell require from earlier cells, and what value or side effect does it produce? Run the offline adaptation before the source.
-
-### Cell 8: Now go back and rerun the cell with the print statement, two cells back
-
-Read this before the next code cell. If it contains an assignment, restate the expected result before writing code. External pages linked here have not been extracted.
-
-### Cell 9: code
-
-- Store expression result in `favorite_fruit`. Re-executing this cell updates kernel state.
-- `print`: Show diagnostic output; this does not replace returning a callback result.
-
-**Pause:** which values does this cell require from earlier cells, and what value or side effect does it produce? Run the offline adaptation before the source.
-
-### Cell 10: Explaining the 'kernel'
-
-Read this before the next code cell. If it contains an assignment, restate the expected result before writing code. External pages linked here have not been extracted.
-
-### Cell 11: code
-
-- `print`: Show diagnostic output; this does not replace returning a callback result.
-
-**Pause:** which values does this cell require from earlier cells, and what value or side effect does it produce? Run the offline adaptation before the source.
-
-### Cell 12: Adding and removing cells
-
-Read this before the next code cell. If it contains an assignment, restate the expected result before writing code. External pages linked here have not been extracted.
-
-### Cell 13: code
-
-Empty code cell; it defines no state.
-
-### Cell 14: Cell output
-
-Read this before the next code cell. If it contains an assignment, restate the expected result before writing code. External pages linked here have not been extracted.
-
-### Cell 15: code
-
-- Store expression result in `spams`. Re-executing this cell updates kernel state.
-- `print`: Show diagnostic output; this does not replace returning a callback result.
-
-**Pause:** which values does this cell require from earlier cells, and what value or side effect does it produce? Run the offline adaptation before the source.
-
-### Cell 16: Using markdown
-
-Read this before the next code cell. If it contains an assignment, restate the expected result before writing code. External pages linked here have not been extracted.
-
-### Cell 17: code
-
-Empty code cell; it defines no state.
-
-### Cell 18: The exclamation point
-
-Read this before the next code cell. If it contains an assignment, restate the expected result before writing code. External pages linked here have not been extracted.
-
-### Cell 19: code
-
-- Inspect the evaluated value or expression; displaying it does not necessarily modify state.
-
-**Pause:** which values does this cell require from earlier cells, and what value or side effect does it produce? Run the offline adaptation before the source.
-
-### Cell 20: code
-
-- Inspect the evaluated value or expression; displaying it does not necessarily modify state.
-
-**Pause:** which values does this cell require from earlier cells, and what value or side effect does it produce? Run the offline adaptation before the source.
-
-### Cell 21: Minor things we encounter on the course
-
-Read this before the next code cell. If it contains an assignment, restate the expected result before writing code. External pages linked here have not been extracted.
-
-### Cell 22: code
-
-- Make available: `time`. Imports do not by themselves perform the later model request, although imported modules can have initialization side effects.
-- Store expression result in `spams`. Re-executing this cell updates kernel state.
-- Visit each item in a loop. Track what is added or changed on each iteration; an async loop awaits incoming items.
-- `time.sleep`: Pause. asyncio.sleep yields the loop; time.sleep blocks the current thread.
-
-**Pause:** which values does this cell require from earlier cells, and what value or side effect does it produce? Run the offline adaptation before the source.
-
-### Cell 23: code
-
-- Make available: `time`. Imports do not by themselves perform the later model request, although imported modules can have initialization side effects.
-- Make available: `tqdm`. Imports do not by themselves perform the later model request, although imported modules can have initialization side effects.
-- Store expression result in `spams`. Re-executing this cell updates kernel state.
-- Visit each item in a loop. Track what is added or changed on each iteration; an async loop awaits incoming items.
-- `time.sleep`: Pause. asyncio.sleep yields the loop; time.sleep blocks the current thread.
-
-**Pause:** which values does this cell require from earlier cells, and what value or side effect does it produce? Run the offline adaptation before the source.
-
-### Cell 24: code
-
-- Make available: `IPython.display`. Imports do not by themselves perform the later model request, although imported modules can have initialization side effects.
-- `display`: Render a value inside a notebook.
-
-**Pause:** which values does this cell require from earlier cells, and what value or side effect does it produce? Run the offline adaptation before the source.
-
-### Cell 25: That's it! You're up to speed on Notebooks / Labs in Cursor.
-
-Read this before the next code cell. If it contains an assignment, restate the expected result before writing code. External pages linked here have not been extracted.
-
-### Cell 26: blank separator
-
-No execution needed.
-
-## Finish check
-
-Explain the inputs, state changes, and stopping rule in your own words. Identify where model calls and external actions begin. A passing practice fixture does not prove the original hosted workflow works.
-
-[Explicit .environment/.env loading and troubleshooting](../../configuration.md)
+Optional: [practice notebook](practice.ipynb) · [all guide lessons](../README.md).

@@ -1,63 +1,51 @@
-# Navigate and inspect files
+# 02 · Use the Windows terminal
 
-Source: [guides/02_command_line.ipynb](../../../../guides/02_command_line.ipynb). Practice: [commented notebook](practice.ipynb).
+A terminal runs commands in a current folder. Python code belongs in a Python file or notebook; the blocks labeled PowerShell below belong in the terminal. Use this when opening the repository, running scripts, or inspecting your environment.
 
-Cell positions below count all cells, including Markdown. They are not execution counts. The map was extracted from local source cells, never their saved outputs.
+## Find your location and open the repository
 
-## Follow the flow
+```powershell
+# Show the current folder.
+Get-Location
+# Move to the course repository. Quoting also works for paths with spaces.
+Set-Location 'C:\src\github_pub\ai_agents'
+# List its files and folders.
+Get-ChildItem
+```
 
-Find current directory → list files → change to intended project → run a command there.
+`Set-Location` changes where subsequent relative paths start. After it runs, `guides` means `C:\src\github_pub\ai_agents\guides`. `Get-ChildItem` should show the repository's folders, including `guides` and `1_foundations`.
 
-**Before source execution:** The local guide delegates Windows/macOS details to external links. This pack adds local exercises rather than claiming those remote pages were read.
+## Create and run a disposable script
 
-Study one concept per sitting. Predict a value, run the corresponding practice cell, explain it, then change one input. If state becomes confusing, restart the practice kernel and run from the top.
+This uses a new temporary folder, so you can experiment without editing course files.
 
-## Concepts to understand
+```powershell
+$lessonFolder = Join-Path ([System.IO.Path]::GetTempPath()) ('ai-lesson-' + [guid]::NewGuid())
+New-Item -ItemType Directory -Path $lessonFolder | Out-Null
+Set-Location $lessonFolder
+'print("Hello from Python")' | Set-Content -LiteralPath 'hello.py'
+& 'C:\src\github_pub\ai_agents\.venv\Scripts\python.exe' hello.py
+Get-Content -LiteralPath 'hello.py'
+```
 
-### Working directory vs. source directory
+You should see `Hello from Python`, then the file's source. `$lessonFolder` is a PowerShell variable. `Join-Path` builds a path. `|` passes one command's output into the next command. `&` runs the quoted executable path. The course's `.venv` contains its Python environment; using its full path selects that interpreter explicitly.
 
-Relative paths start at the process working directory. They do not automatically start next to a notebook. This example inspects paths only and never creates or deletes files.
+## Diagnose a missing command
 
-**Ask yourself:** What folder is the starting point for Path(".")?
+```powershell
+Get-Command python -ErrorAction SilentlyContinue
+& 'C:\src\github_pub\ai_agents\.venv\Scripts\python.exe' --version
+Set-Location 'C:\src\github_pub\ai_agents'
+```
 
-**Practice:** Compare the path from the repository root with the path from a week folder. Explain why cd changes relative-file behavior.
+The first command reports a `python` found through PATH, if one exists. The second identifies the course interpreter even if PATH has no Python. If the full path is missing, the repository environment has not been created at that location.
 
-### Configuration stays outside executable examples
+## Practice
 
-Environment-variable names identify settings. Values belong in .environment/.env and are loaded deliberately. This exercise inspects only the path and simulated presence flags; it reads no private file or variable values.
+In the temporary folder, change the script to `print(6 * 7)` with `Set-Content`, then run it again. Expected result: `42`. Use the up arrow to recall a previous command; press Ctrl+C to interrupt a running command.
 
-**Ask yourself:** Does finding a file prove that authentication works?
+---
 
-**Practice:** Explain the difference between a missing file, a missing variable, and a provider rejecting authentication. Do not print token prefixes or values.
+Source: [02_command_line.ipynb](../../../../guides/02_command_line.ipynb). This lesson expands the locally documented topics with teaching examples; linked external briefings were not used as source contents.
 
-## Follow the source in order
-
-### Cell 1: The command line
-
-Read this before the next code cell. If it contains an assignment, restate the expected result before writing code. External pages linked here have not been extracted.
-
-### Cell 2: Explanation, context, or transition
-
-Read this before the next code cell. If it contains an assignment, restate the expected result before writing code. External pages linked here have not been extracted.
-
-### Cell 3: For Windows PC users
-
-Read this before the next code cell. If it contains an assignment, restate the expected result before writing code. External pages linked here have not been extracted.
-
-### Cell 4: For Mac users
-
-Read this before the next code cell. If it contains an assignment, restate the expected result before writing code. External pages linked here have not been extracted.
-
-### Cell 5: Explanation, context, or transition
-
-Read this before the next code cell. If it contains an assignment, restate the expected result before writing code. External pages linked here have not been extracted.
-
-### Cell 6: blank separator
-
-No execution needed.
-
-## Finish check
-
-Explain the inputs, state changes, and stopping rule in your own words. Identify where model calls and external actions begin. A passing practice fixture does not prove the original hosted workflow works.
-
-[Explicit .environment/.env loading and troubleshooting](../../configuration.md)
+Optional: [practice notebook](practice.ipynb) · [all guide lessons](../README.md).
