@@ -1,72 +1,67 @@
-# 12 · Turn an idea into a measurable first project
+# Define success and experiment incrementally
 
-Start with one input, one output, and a definition of success. Build a small prototype, test representative cases, then change one approach and compare it on the same cases. This implements the source guide's advice to experiment like a scientist.
+Source: [guides/12_starting_your_project.ipynb](../../../../guides/12_starting_your_project.ipynb). Practice: [commented notebook](practice.ipynb).
 
-## Define a narrow job
+Cell positions below count all cells, including Markdown. They are not execution counts. The map was extracted from local source cells, never their saved outputs.
 
-Example: label a support message as `billing` or `other`. This is small enough to test before building a chat UI or an agent team. The fixture below is local example data, not customer data.
+## Follow the flow
 
-```python
-cases = [
-    {"text": "Please resend my invoice", "expected": "billing"},
-    {"text": "How can I change my password?", "expected": "other"},
-    {"text": "I need a refund", "expected": "billing"},
-]
+Choose a measurable outcome → curate examples → compare small prototypes → inspect failures → expand only after understanding the result.
 
-def classify(text):
-    return "billing" if "invoice" in text.lower() else "other"
+**Before source execution:** Fictional prototype scores in practice are teaching fixtures, not measurements of any real model.
 
-correct = 0
-for case in cases:
-    actual = classify(case["text"])
-    passed = actual == case["expected"]
-    correct += int(passed)
-    print(actual, case["expected"], passed)
-print(f"Passed {correct}/{len(cases)}")
-```
+Study one concept per sitting. Predict a value, run the corresponding practice cell, explain it, then change one input. If state becomes confusing, restart the practice kernel and run from the top.
 
-Output:
+## Concepts to understand
 
-```text
-billing billing True
-other other True
-other billing False
-Passed 2/3
-```
+### Evaluate a small prototype with a fixed dataset
 
-The classifier is a deliberately simple baseline. The conditional expression chooses one of two labels. `int(True)` is `1` and `int(False)` is `0`, allowing the loop to count successes. The failure identifies a concrete gap: refunds do not mention invoices.
+Choose a success measure before comparing approaches. Use a small curated set so you can reproduce failures. Scores below describe fictional fixtures, not real model performance.
 
-## Compare an improvement on the same cases
+**Ask yourself:** Which fixture scores better, and what does the score actually measure?
 
-```python
-cases = [
-    ("Please resend my invoice", "billing"),
-    ("How can I change my password?", "other"),
-    ("I need a refund", "billing"),
-]
+**Practice:** Add a case where a correct paraphrase differs from the expected string. Explain why exact-match scoring may be insufficient.
 
-def classify(text):
-    words = text.lower().split()
-    return "billing" if any(word in words for word in ["invoice", "refund"]) else "other"
+### Chaining: one output becomes the next input
 
-results = [classify(text) == expected for text, expected in cases]
-print(f"Passed {sum(results)}/{len(cases)}")
-```
+A chain has a fixed order. Each stage depends on the previous result. Here the replies are explicit fictional fixtures, so you can observe the wiring without an API.
 
-Output: `Passed 3/3`. Each tuple is unpacked into `text` and `expected`. `any` is true when at least one candidate matches. This proves the change passes these three cases; it does not establish performance on unseen messages.
+**Ask yourself:** Does the second stage receive the first result, or just the original question?
 
-## Find limitations before adding complexity
+**Practice:** Change choose_area to a different fictional business area. Trace the changed value through each stage.
 
-Try `"My invoice?"`: splitting retains punctuation, so `invoice?` does not match `invoice`. Try `"This is not a refund request"`: keyword presence ignores meaning. Record these as separate cases with the label you actually want. If you later substitute a model, keep the same interface and test cases so you can compare approaches fairly.
+### Reproduce, inspect, simplify, fix
 
-Before a real model prototype, define a request limit, expected output format, timeout, and how failures appear to the user. Keep private configuration in `.environment/.env`. Measure accuracy, response time, and usage separately; one successful demonstration does not measure reliability.
+A small failing case separates causes. Catch the exact exception in a teaching example so the notebook can continue, then implement a specific repair.
 
-## Practice
+**Ask yourself:** Will the original operation raise NameError or KeyError?
 
-Add five cases of your own before changing the classifier. Include punctuation, capitalization, a misleading keyword, and an empty input. Write expected labels first. Then make one improvement, rerun all cases, and keep both the successes and failures in your notes.
+**Practice:** Remove the record definition in a scratch cell. Explain how the new NameError differs from the original missing-key error.
 
----
+## Follow the source in order
 
-Source: [12_starting_your_project.ipynb](../../../../guides/12_starting_your_project.ipynb). This lesson expands the locally documented topics with teaching examples; linked external briefings were not used as source contents.
+### Cell 1: How to start working on your idea
 
-Optional: [practice notebook](practice.ipynb) · [all guide lessons](../README.md).
+Read this before the next code cell. If it contains an assignment, restate the expected result before writing code. External pages linked here have not been extracted.
+
+### Cell 2: Advice 1: Be a Scientist
+
+Read this before the next code cell. If it contains an assignment, restate the expected result before writing code. External pages linked here have not been extracted.
+
+### Cell 3: Advice 2: Embrace R&D
+
+Read this before the next code cell. If it contains an assignment, restate the expected result before writing code. External pages linked here have not been extracted.
+
+### Cell 4: Advice 3: Dream big but start SMALL!
+
+Read this before the next code cell. If it contains an assignment, restate the expected result before writing code. External pages linked here have not been extracted.
+
+### Cell 5: In summary
+
+Read this before the next code cell. If it contains an assignment, restate the expected result before writing code. External pages linked here have not been extracted.
+
+## Finish check
+
+Explain the inputs, state changes, and stopping rule in your own words. Identify where model calls and external actions begin. A passing practice fixture does not prove the original hosted workflow works.
+
+[Explicit .environment/.env loading and troubleshooting](../../configuration.md)

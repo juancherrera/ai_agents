@@ -1,494 +1,280 @@
-# 10 · Comprehensions, generators, classes, and decorators
+# Comprehensions, classes, generators, and decorators
 
-These features make the course's short Python expressions easier to read. The examples below build from ordinary loops to their compact equivalents and then solve the source guide's book exercise.
+Source: [guides/10_intermediate_python.ipynb](../../../../guides/10_intermediate_python.ipynb). Practice: [commented notebook](practice.ipynb).
 
-## A comprehension is a loop that builds a collection
+Cell positions below count all cells, including Markdown. They are not execution counts. The map was extracted from local source cells, never their saved outputs.
 
-```python
-fruits = ["Apples", "Bananas", "Pears"]
-shouted = []
-for fruit in fruits:
-    shouted.append(fruit.upper())
+## Follow the flow
 
-compact = [fruit.upper() for fruit in fruits]
-assert compact == shouted
-print(compact)
-print([fruit.upper() for fruit in fruits if len(fruit) > 5])
-print({fruit: fruit.upper() for fruit in fruits})
-```
+Filter books → build structured classes → yield unique authors → understand inheritance/hints → recognize decorator registration.
 
-Output:
+**Before source execution:** The final Docker command downloads and runs a container. Practice does not execute Docker. A type annotation alone is not runtime validation.
 
-```text
-['APPLES', 'BANANAS', 'PEARS']
-['APPLES', 'BANANAS']
-{'Apples': 'APPLES', 'Bananas': 'BANANAS', 'Pears': 'PEARS'}
-```
+Study one concept per sitting. Predict a value, run the corresponding practice cell, explain it, then change one input. If state becomes confusing, restart the practice kernel and run from the top.
 
-Read `[result for item in collection if condition]` as: loop over the collection, keep items meeting the condition, and append each result. Braces with `key: value` produce a dictionary.
+## Concepts to understand
 
-## Handle missing authors and remove duplicates
+### Variables, dictionaries, and functions
 
-```python
-books = [
-    {"title": "Great Expectations", "author": "Charles Dickens"},
-    {"title": "Bleak House", "author": "Charles Dickens"},
-    {"title": "A Book By No Author"},
-    {"title": "Moby Dick", "author": "Herman Melville"},
-]
-authors = {book.get("author") for book in books if book.get("author")}
-print(sorted(authors))
-```
+A function consumes an input and returns a value. Dictionary lookup with get can handle optional fields. Comprehensions transform a collection.
 
-Output: `['Charles Dickens', 'Herman Melville']`. `.get` returns `None` for the missing author. The condition skips that item. Braces without a colon create a set comprehension, so Dickens appears once. The source's `book['author']` would raise `KeyError` for the book without that key.
+**Ask yourself:** Which book has no author?
 
-## A generator delivers one item at a time
+**Practice:** Add another authored book. Collect unique authors with a set and explain how it differs from a list.
 
-```python
-def fruit_names():
-    for fruit in ["Apples", "Bananas", "Pears"]:
-        yield fruit  # Pause here; resume when the caller asks for another item.
+### Classes, methods, and generators
 
-stream = fruit_names()
-print(next(stream))
-print(list(stream))
-print(list(stream))
-```
+A class bundles data and behavior. A method receives self, the current instance. A generator yields values as they are requested.
 
-Output: `Apples`, then `['Bananas', 'Pears']`, then `[]`. Calling the generator function creates a generator; it does not immediately execute the loop. `next` requests one item. `list` consumes the remaining items. A consumed generator is exhausted, so create a new one to replay it. This is useful for streaming model output.
+**Ask yourself:** Will the same author be yielded twice?
 
-`yield` emits one object; `yield from` emits each item of an iterable:
+**Practice:** Add a book by another author. Explain why yield allows iteration to continue while return would end it.
 
-```python
-def whole_word():
-    yield "Hi"
+### Streaming sends partial progress
 
-def letters():
-    yield from "Hi"
+A generator yields multiple updates. A streamed API can include multiple event types, so a UI should select the text events rather than assume every event is text.
 
-print(list(whole_word()))
-print(list(letters()))
-```
+**Ask yourself:** How many text chunks are selected?
 
-Output: `['Hi']`, then `['H', 'i']`. A string is iterable by character. That explains the source's letter-by-letter sentence generator without needing its infinite loop.
+**Practice:** Insert a non-text event between the chunks. Confirm it does not become displayed answer text.
 
-## Solve the Book and BookShelf exercise
+### Structured output validates shape
 
-```python
-class Book:
-    def __init__(self, title: str, author: str | None = None):
-        self.title = title
-        self.author = author
+Pydantic models name the fields you expect and check constraints. This helps callers use results reliably, but a valid field can still contain a false claim.
 
-    def has_author(self) -> bool:
-        return bool(self.author)
+**Ask yourself:** Will confidence=2 pass the constraint?
 
-class BookShelf:
-    def __init__(self, books: list[Book]):
-        self.books = books
+**Practice:** Add a field named follow_up_questions with type list[str]. Construct a valid object using it.
 
-    def unique_authors(self):
-        seen = set()
-        for book in self.books:
-            if book.has_author() and book.author not in seen:
-                seen.add(book.author)
-                yield book.author
+### Generated code is an output before it is execution
 
-shelf = BookShelf([Book("One", "Dickens"), Book("Two", "Dickens"), Book("Three")])
-print(list(shelf.unique_authors()))
-```
+A coding workflow designs, writes, and reviews code. Generated files or Docker execution are side effects. First inspect and validate a harmless code string locally.
 
-Output: `['Dickens']`. `str | None` means text or no value; `-> bool` documents the return type. These hints do not enforce types at runtime. `seen` records authors already emitted; the generator preserves first-seen order while avoiding duplicates.
+**Ask yourself:** Does parsing Python text execute it?
 
-## Inheritance extends an existing class
+**Practice:** Write a test plan for the intended function. Explain which separate step would run code and where the source uses Docker.
 
-```python
-class Book:
-    def __init__(self, title):
-        self.title = title
+## Follow the source in order
 
-class Ebook(Book):
-    def __init__(self, title, format):
-        super().__init__(title)  # Reuse the parent initialization.
-        self.format = format
+### Cell 1: Intermediate Level Python
 
-book = Ebook("Moby Dick", "epub")
-print(book.title, book.format)
-```
+Read this before the next code cell. If it contains an assignment, restate the expected result before writing code. External pages linked here have not been extracted.
 
-Output: `Moby Dick epub`. `Ebook(Book)` declares a subclass. `super` calls the parent implementation so you do not repeat its initialization.
+### Cell 2: code
 
-## Pydantic checks data at runtime
+- Store list in `fruits`. Re-executing this cell updates kernel state.
+- Store dictionary in `book1`. Re-executing this cell updates kernel state.
+- Store dictionary in `book2`. Re-executing this cell updates kernel state.
+- Store dictionary in `book3`. Re-executing this cell updates kernel state.
+- Store dictionary in `book4`. Re-executing this cell updates kernel state.
+- Store list in `books`. Re-executing this cell updates kernel state.
 
-```python
-from pydantic import BaseModel, ValidationError
+**Pause:** which values does this cell require from earlier cells, and what value or side effect does it produce? Run the offline adaptation before the source.
 
-class Evaluation(BaseModel):
-    acceptable: bool
-    feedback: str
+### Cell 3: Part 1: List and dict comprehensions
 
-evaluation = Evaluation(acceptable=True, feedback="Clear answer")
-print(evaluation.acceptable)
-try:
-    Evaluation(acceptable=True)  # Required feedback is missing.
-except ValidationError:
-    print("Missing feedback rejected")
-```
+Read this before the next code cell. If it contains an assignment, restate the expected result before writing code. External pages linked here have not been extracted.
 
-Output: `True`, then `Missing feedback rejected`. Unlike plain annotations, constructing this model validates the input. The course uses this to represent structured evaluation results; successful validation does not prove the evaluator's judgment is correct.
+### Cell 4: code
 
-## A decorator wraps a function
+- Visit each item in a loop. Track what is added or changed on each iteration; an async loop awaits incoming items.
+- `print`: Show diagnostic output; this does not replace returning a callback result.
 
-```python
-from functools import wraps
+**Pause:** which values does this cell require from earlier cells, and what value or side effect does it produce? Run the offline adaptation before the source.
 
-def announce(function):
-    @wraps(function)
-    def wrapper(*args, **kwargs):
-        print("Calling", function.__name__)
-        return function(*args, **kwargs)
-    return wrapper
+### Cell 5: code
 
-@announce
-def add(a, b):
-    return a + b
+- Store list in `fruits_shouted`. Re-executing this cell updates kernel state.
+- Visit each item in a loop. Track what is added or changed on each iteration; an async loop awaits incoming items.
+- `fruits_shouted.append`: Add one item to an existing list; rerunning the cell repeats that addition.
 
-print(add(2, 3))
-```
+**Pause:** which values does this cell require from earlier cells, and what value or side effect does it produce? Run the offline adaptation before the source.
 
-Output: `Calling add`, then `5`. `@announce` is shorthand for replacing `add` with `announce(add)`. `*args` collects positional arguments; `**kwargs` collects named ones. The wrapper adds behavior and delegates the actual calculation. SDK decorators can similarly register a Python function as a tool.
+### Cell 6: code
 
-## Docker runs Python in a container
+- Store expression result in `fruits_shouted2`. Re-executing this cell updates kernel state.
 
-With Docker installed and running, use this terminal command from the source:
+**Pause:** which values does this cell require from earlier cells, and what value or side effect does it produce? Run the offline adaptation before the source.
 
-```powershell
-docker run --rm python:3.12 python -c "print(2 + 2)"
-```
+### Cell 7: code
 
-Expected program output: `4`, alongside possible image-download messages. `python:3.12` selects the image; the next `python` is the program inside the container; `-c` supplies its code; `--rm` removes the container after it exits. The downloaded image remains. Docker execution is not part of the verified offline Python exercises.
+- Store expression result in `fruit_mapping`. Re-executing this cell updates kernel state.
 
-## Practice
+**Pause:** which values does this cell require from earlier cells, and what value or side effect does it produce? Run the offline adaptation before the source.
 
-Add `Book("Four", "Melville")` to the shelf. Expected authors: `['Dickens', 'Melville']`. Then explain why using `return book.author` inside the loop would stop the method after its first result, while `yield` allows it to continue.
+### Cell 8: code
 
-## Instructor code, included here
+- Store expression result in `fruits_with_longer_names_shouted`. Re-executing this cell updates kernel state.
 
-These are the code examples from the local guide, in their original order, so you can compare the instructor's syntax with the explanations above without opening another file. These excerpts can depend on earlier definitions. The complete teaching examples above include their own inputs.
+**Pause:** which values does this cell require from earlier cells, and what value or side effect does it produce? Run the offline adaptation before the source.
 
-Source examples that intentionally fail, run indefinitely, download software, or contact a service are labeled below. Hosted configuration reads have been changed to your explicit `.environment/.env` path; credential values are never included.
+### Cell 9: code
 
-### A briefing on more advanced features of Python
+- Store expression result in `fruit_mapping_unless_starts_with_a`. Re-executing this cell updates kernel state.
 
-Track the value assigned to fruit or fruits before this runs. The kernel keeps previous assignments until restart.
+**Pause:** which values does this cell require from earlier cells, and what value or side effect does it produce? Run the offline adaptation before the source.
 
-```python
-# First let's create some things:
+### Cell 10: code
 
-fruits = ["Apples", "Bananas", "Pears"]
+- Inspect the evaluated value or expression; displaying it does not necessarily modify state.
 
-book1 = {"title": "Great Expectations", "author": "Charles Dickens"}
-book2 = {"title": "Bleak House", "author": "Charles Dickens"}
-book3 = {"title": "An Book By No Author"}
-book4 = {"title": "Moby Dick", "author": "Herman Melville"}
+**Pause:** which values does this cell require from earlier cells, and what value or side effect does it produce? Run the offline adaptation before the source.
 
-books = [book1, book2, book3, book4]
-```
+### Cell 11: code
 
-### Part 1: List and dict comprehensions
+- Inspect the evaluated value or expression; displaying it does not necessarily modify state.
 
-Track the value assigned to fruit or fruits before this runs. The kernel keeps previous assignments until restart.
+**Pause:** which values does this cell require from earlier cells, and what value or side effect does it produce? Run the offline adaptation before the source.
 
-```python
-# Simple enough to start
+### Cell 12: code
 
-for fruit in fruits:
-    print(fruit)
-```
+- `book.get`: Retrieve a value or HTTP resource, depending on the receiver.
 
-### Part 1: List and dict comprehensions
+**Pause:** which values does this cell require from earlier cells, and what value or side effect does it produce? Run the offline adaptation before the source.
 
-Track the value assigned to fruit or fruits before this runs. The kernel keeps previous assignments until restart.
+### Cell 13: code
 
-```python
-# Let's make a new version of fruits
+- `book.get`: Retrieve a value or HTTP resource, depending on the receiver.
 
-fruits_shouted = []
-for fruit in fruits:
-    fruits_shouted.append(fruit.upper())
+**Pause:** which values does this cell require from earlier cells, and what value or side effect does it produce? Run the offline adaptation before the source.
 
-fruits_shouted
-```
+### Cell 14: code
 
-### Part 1: List and dict comprehensions
+- `book.get`: Retrieve a value or HTTP resource, depending on the receiver.
 
-Follow the for clause to find the input items, then read the expression before it to see what each item becomes. An if clause filters items.
+**Pause:** which values does this cell require from earlier cells, and what value or side effect does it produce? Run the offline adaptation before the source.
 
-```python
-# You probably already know this
-# There's a nice Python construct called "list comprehension" that does this:
+### Cell 15: code
 
-fruits_shouted2 = [fruit.upper() for fruit in fruits]
-fruits_shouted2
-```
+- `book.get`: Retrieve a value or HTTP resource, depending on the receiver.
 
-### Part 1: List and dict comprehensions
+**Pause:** which values does this cell require from earlier cells, and what value or side effect does it produce? Run the offline adaptation before the source.
 
-Follow the for clause to find the input items, then read the expression before it to see what each item becomes. An if clause filters items.
+### Cell 16: Part 2: Generators
 
-```python
-# But you may not know that you can do this to create dictionaries, too:
+Read this before the next code cell. If it contains an assignment, restate the expected result before writing code. External pages linked here have not been extracted.
 
-fruit_mapping = {fruit: fruit.upper() for fruit in fruits}
-fruit_mapping
-```
+### Cell 17: code
 
-### Part 1: List and dict comprehensions
+- Make available: `time`. Imports do not by themselves perform the later model request, although imported modules can have initialization side effects.
+- Define `come_up_with_fruit_names()`. Its body runs when called.
+- `time.sleep`: Pause. asyncio.sleep yields the loop; time.sleep blocks the current thread.
 
-Follow the for clause to find the input items, then read the expression before it to see what each item becomes. An if clause filters items.
+**Pause:** which values does this cell require from earlier cells, and what value or side effect does it produce? Run the offline adaptation before the source.
 
-```python
-# you can also use the if statement to filter the results
+### Cell 18: code
 
-fruits_with_longer_names_shouted = [fruit.upper() for fruit in fruits if len(fruit)>5]
-fruits_with_longer_names_shouted
-```
+- Visit each item in a loop. Track what is added or changed on each iteration; an async loop awaits incoming items.
+- `print`: Show diagnostic output; this does not replace returning a callback result.
 
-### Part 1: List and dict comprehensions
+**Pause:** which values does this cell require from earlier cells, and what value or side effect does it produce? Run the offline adaptation before the source.
 
-Follow the for clause to find the input items, then read the expression before it to see what each item becomes. An if clause filters items.
+### Cell 19: code
 
-```python
-fruit_mapping_unless_starts_with_a = {fruit: fruit.upper() for fruit in fruits if not fruit.startswith('A')}
-fruit_mapping_unless_starts_with_a
-```
+- Define `authors_generator()`. Its body runs when called.
+- `book.get`: Retrieve a value or HTTP resource, depending on the receiver.
 
-### Part 1: List and dict comprehensions
+**Pause:** which values does this cell require from earlier cells, and what value or side effect does it produce? Run the offline adaptation before the source.
 
-Follow the for clause to find the input items, then read the expression before it to see what each item becomes. An if clause filters items.
+### Cell 20: code
 
-```python
-# Another comprehension
+- Visit each item in a loop. Track what is added or changed on each iteration; an async loop awaits incoming items.
+- `print`: Show diagnostic output; this does not replace returning a callback result.
 
-[book['title'] for book in books]
-```
+**Pause:** which values does this cell require from earlier cells, and what value or side effect does it produce? Run the offline adaptation before the source.
 
-### Part 1: List and dict comprehensions
+### Cell 21: code
 
-This intentionally raises KeyError when a book has no author. Use the .get example that follows to handle missing keys.
+- Define `authors_generator()`. Its body runs when called.
+- `book.get`: Retrieve a value or HTTP resource, depending on the receiver.
 
-```python
-# This code will fail with an error because one of our books doesn't have an author
+**Pause:** which values does this cell require from earlier cells, and what value or side effect does it produce? Run the offline adaptation before the source.
 
-[book['author'] for book in books]
-```
+### Cell 22: code
 
-### Part 1: List and dict comprehensions
+- Visit each item in a loop. Track what is added or changed on each iteration; an async loop awaits incoming items.
+- `print`: Show diagnostic output; this does not replace returning a callback result.
 
-Follow the for clause to find the input items, then read the expression before it to see what each item becomes. An if clause filters items.
+**Pause:** which values does this cell require from earlier cells, and what value or side effect does it produce? Run the offline adaptation before the source.
 
-```python
-# But this will work, because get() returns None
+### Cell 23: code
 
-[book.get('author') for book in books]
-```
+- Define `authors_generator()`. Its body runs when called.
+- `book.get`: Retrieve a value or HTTP resource, depending on the receiver.
 
-### Part 1: List and dict comprehensions
+**Pause:** which values does this cell require from earlier cells, and what value or side effect does it produce? Run the offline adaptation before the source.
 
-Follow the for clause to find the input items, then read the expression before it to see what each item becomes. An if clause filters items.
+### Cell 24: code
 
-```python
-# And this variation will filter out the None
+- Visit each item in a loop. Track what is added or changed on each iteration; an async loop awaits incoming items.
+- `print`: Show diagnostic output; this does not replace returning a callback result.
 
-[book.get('author') for book in books if book.get('author')]
-```
+**Pause:** which values does this cell require from earlier cells, and what value or side effect does it produce? Run the offline adaptation before the source.
 
-### Part 1: List and dict comprehensions
+### Cell 25: code
 
-Follow the for clause to find the input items, then read the expression before it to see what each item becomes. An if clause filters items.
+- Define `unique_authors_generator()`. Its body runs when called.
+- `book.get`: Retrieve a value or HTTP resource, depending on the receiver.
 
-```python
-# And this version will convert it into a set, removing duplicates
+**Pause:** which values does this cell require from earlier cells, and what value or side effect does it produce? Run the offline adaptation before the source.
 
-set([book.get('author') for book in books if book.get('author')])
-```
+### Cell 26: code
 
-### Part 1: List and dict comprehensions
+- Visit each item in a loop. Track what is added or changed on each iteration; an async loop awaits incoming items.
+- `print`: Show diagnostic output; this does not replace returning a callback result.
 
-Follow the for clause to find the input items, then read the expression before it to see what each item becomes. An if clause filters items.
+**Pause:** which values does this cell require from earlier cells, and what value or side effect does it produce? Run the offline adaptation before the source.
 
-```python
-# And finally, this version is even nicer
-# curly braces creates a set, so this is a set comprehension
+### Cell 27: code
 
-{book.get('author') for book in books if book.get('author')}
-```
+- Make available: `random`. Imports do not by themselves perform the later model request, although imported modules can have initialization side effects.
+- Make available: `time`. Imports do not by themselves perform the later model request, although imported modules can have initialization side effects.
+- Store list in `pronouns`. Re-executing this cell updates kernel state.
+- Store list in `verbs`. Re-executing this cell updates kernel state.
+- Store list in `adjectives`. Re-executing this cell updates kernel state.
+- Store list in `nouns`. Re-executing this cell updates kernel state.
+- Define `infinite_random_sentences()`. Its body runs when called.
+- Visit each item in a loop. Track what is added or changed on each iteration; an async loop awaits incoming items.
+- `print`: Show diagnostic output; this does not replace returning a callback result.
+- `time.sleep`: Pause. asyncio.sleep yields the loop; time.sleep blocks the current thread.
 
-### Part 2: Generators
+**Pause:** which values does this cell require from earlier cells, and what value or side effect does it produce? Run the offline adaptation before the source.
 
-yield supplies the next item and pauses; yield from supplies each item from the following iterable.
+### Cell 28: Exercise
 
-```python
-# First define a generator; it looks like a function, but it has yield instead of return
+Read this before the next code cell. If it contains an assignment, restate the expected result before writing code. External pages linked here have not been extracted.
 
-import time
+### Cell 29: Part 3: Sub-classes, Type Hints, Pydantic
 
-def come_up_with_fruit_names():
-    for fruit in fruits:
-        time.sleep(1) # thinking of a fruit
-        yield fruit
-```
+Read this before the next code cell. If it contains an assignment, restate the expected result before writing code. External pages linked here have not been extracted.
 
-### Part 2: Generators
+### Cell 30: Part 4: Decorators
 
-Track the value assigned to fruit or fruits before this runs. The kernel keeps previous assignments until restart.
+Read this before the next code cell. If it contains an assignment, restate the expected result before writing code. External pages linked here have not been extracted.
 
-```python
-# Then use it
+### Cell 31: Part 5: Docker
 
-for fruit in come_up_with_fruit_names():
-    print(fruit)
-```
+Read this before the next code cell. If it contains an assignment, restate the expected result before writing code. External pages linked here have not been extracted.
 
-### Part 2: Generators
+### Cell 32: code
 
-yield supplies the next item and pauses; yield from supplies each item from the following iterable.
+- Inspect the evaluated value or expression; displaying it does not necessarily modify state.
 
-```python
-# Here's another one
+**Pause:** which values does this cell require from earlier cells, and what value or side effect does it produce? Run the offline adaptation before the source.
 
-def authors_generator():
-    for book in books:
-        if book.get("author"):
-            yield book.get("author")
-```
+## Definitions to find
 
-### Part 2: Generators
+| Cell | Name | Kind |
+| --- | --- | --- |
+| 17 | `come_up_with_fruit_names` | function |
+| 19 | `authors_generator` | function |
+| 21 | `authors_generator` | function |
+| 23 | `authors_generator` | function |
+| 25 | `unique_authors_generator` | function |
+| 27 | `infinite_random_sentences` | function |
 
-Read the comments and follow each assignment to its next use. Any name not defined here comes from an earlier example in this section.
+## Finish check
 
-```python
-# Use it
+Explain the inputs, state changes, and stopping rule in your own words. Identify where model calls and external actions begin. A passing practice fixture does not prove the original hosted workflow works.
 
-for author in authors_generator():
-    print(author)
-```
-
-### Part 2: Generators
-
-yield supplies the next item and pauses; yield from supplies each item from the following iterable.
-
-```python
-# Here's the same thing written with list comprehension
-
-def authors_generator():
-    for author in [book.get("author") for book in books if book.get("author")]:
-        yield author
-```
-
-### Part 2: Generators
-
-Read the comments and follow each assignment to its next use. Any name not defined here comes from an earlier example in this section.
-
-```python
-# Use it
-
-for author in authors_generator():
-    print(author)
-```
-
-### Part 2: Generators
-
-yield supplies the next item and pauses; yield from supplies each item from the following iterable.
-
-```python
-# Here's a nice shortcut
-# You can use "yield from" to yield each item of an iterable
-
-def authors_generator():
-    yield from [book.get("author") for book in books if book.get("author")]
-```
-
-### Part 2: Generators
-
-Read the comments and follow each assignment to its next use. Any name not defined here comes from an earlier example in this section.
-
-```python
-# Use it
-
-for author in authors_generator():
-    print(author)
-```
-
-### Part 2: Generators
-
-yield supplies the next item and pauses; yield from supplies each item from the following iterable.
-
-```python
-# And finally - we can replace the list comprehension with a set comprehension
-
-def unique_authors_generator():
-    yield from {book.get("author") for book in books if book.get("author")}
-```
-
-### Part 2: Generators
-
-Read the comments and follow each assignment to its next use. Any name not defined here comes from an earlier example in this section.
-
-```python
-# Use it
-
-for author in unique_authors_generator():
-    print(author)
-```
-
-### Part 2: Generators
-
-This loop does not finish on its own. Read it to understand streaming; use the notebook stop button if you choose to run it.
-
-```python
-# And for some fun - press the stop button in the toolbar when bored!
-# It's like we've made our own Large Language Model... although not particularly large..
-# See if you understand why it prints a letter at a time, instead of a word at a time. If you're unsure, try removing the keyword "from" everywhere in the code.
-
-import random
-import time
-
-pronouns = ["I", "You", "We", "They"]
-verbs = ["eat", "detest", "bathe in", "deny the existence of", "resent", "pontificate about", "juggle", "impersonate", "worship", "misplace", "conspire with", "philosophize about", "tap dance on", "dramatically renounce", "secretly collect"]
-adjectives = ["turqoise", "smelly", "arrogant", "festering", "pleasing", "whimsical", "disheveled", "pretentious", "wobbly", "melodramatic", "pompous", "fluorescent", "bewildered", "suspicious", "overripe"]
-nouns = ["turnips", "rodents", "eels", "walruses", "kumquats", "monocles", "spreadsheets", "bagpipes", "wombats", "accordions", "mustaches", "calculators", "jellyfish", "thermostats"]
-
-def infinite_random_sentences():
-    while True:
-        yield from random.choice(pronouns)
-        yield " "
-        yield from random.choice(verbs)
-        yield " "
-        yield from random.choice(adjectives)
-        yield " "
-        yield from random.choice(nouns)
-        yield ". "
-
-for letter in infinite_random_sentences():
-    print(letter, end="", flush=True)
-    time.sleep(0.02)
-```
-
-### Part 5: Docker
-
-Optional environment/service example: this can load private configuration, contact a service, or run a terminal command. It was not executed in the offline checks.
-
-```python
-# You need to install docker to run this example
-# This will download the Docker image for python 3.12, create a container,
-# Run some python code and print the result
-
-!docker run --rm python:3.12 python -c "print(2 + 2)"
-```
-
----
-
-Source: [10_intermediate_python.ipynb](../../../../guides/10_intermediate_python.ipynb). This lesson expands the locally documented topics with teaching examples; linked external briefings were not used as source contents.
-
-Optional: [practice notebook](practice.ipynb) · [all guide lessons](../README.md).
+[Explicit .environment/.env loading and troubleshooting](../../configuration.md)

@@ -1,178 +1,100 @@
-# 11 · Understand async by comparing waiting patterns
+# Coroutines, await, and gather
 
-Async lets a program do other work while an operation is waiting. It is useful when several model or tool requests spend time waiting for responses. It does not automatically make CPU calculations faster.
+Source: [guides/11_async_python.ipynb](../../../../guides/11_async_python.ipynb). Practice: [commented notebook](practice.ipynb).
 
-## A complete script: wait for one operation
+Cell positions below count all cells, including Markdown. They are not execution counts. The map was extracted from local source cells, never their saved outputs.
 
-```python
-import asyncio
+## Follow the flow
 
-async def work(name):
-    print("Start", name)
-    await asyncio.sleep(0.01)  # Simulate waiting without blocking the event loop.
-    print("End", name)
-    return name.upper()
+Define coroutine → distinguish creation from execution → await serial tasks → gather independent tasks → wrap script entry point.
 
-async def main():
-    result = await work("one")
-    print(result)
+**Before source execution:** The source deliberately creates unawaited coroutines to show warnings. The practice notebook avoids leaking unawaited coroutine objects.
 
-if __name__ == "__main__":
-    asyncio.run(main())
-```
+Study one concept per sitting. Predict a value, run the corresponding practice cell, explain it, then change one input. If state becomes confusing, restart the practice kernel and run from the top.
 
-Output: `Start one`, `End one`, then `ONE`. `async def` defines a coroutine function. Calling `work("one")` creates a coroutine; `await` runs it and waits for its result while allowing other scheduled work to progress. `asyncio.run` starts an event loop for a normal script.
+## Concepts to understand
 
-In a notebook, use the same definitions but replace the final `if` block with `await main()`. Notebooks already have an event loop, so starting another with `asyncio.run` can fail there.
+### Await vs. concurrent work
 
-## Two awaits in sequence still run sequentially
+Calling an async function creates a coroutine. Await executes/waits for it. gather schedules independent coroutines and returns results in input order. Notebook cells support top-level await.
 
-```python
-import asyncio
+**Ask yourself:** Will results follow completion order or input order?
 
-async def work(name):
-    print("Start", name)
-    await asyncio.sleep(0.01)
-    print("End", name)
-    return name.upper()
+**Practice:** Run the two functions with separate awaits. Explain why a dependent stage cannot start until it has its input.
 
-async def main():
-    first = await work("one")
-    second = await work("two")
-    print([first, second])
+### Streaming sends partial progress
 
-if __name__ == "__main__":
-    asyncio.run(main())
-```
+A generator yields multiple updates. A streamed API can include multiple event types, so a UI should select the text events rather than assume every event is text.
 
-The order is `Start one`, `End one`, `Start two`, `End two`, then `['ONE', 'TWO']`. The second call is not reached until the first await finishes. Adding `async` alone does not schedule concurrent work.
+**Ask yourself:** How many text chunks are selected?
 
-## Gather schedules both operations
+**Practice:** Insert a non-text event between the chunks. Confirm it does not become displayed answer text.
 
-```python
-import asyncio
+## Follow the source in order
 
-async def work(name):
-    print("Start", name)
-    await asyncio.sleep(0.01)
-    print("End", name)
-    return name.upper()
+### Cell 1: Async Python
 
-async def main():
-    results = await asyncio.gather(work("one"), work("two"))
-    print(results)
+Read this before the next code cell. If it contains an assignment, restate the expected result before writing code. External pages linked here have not been extracted.
 
-if __name__ == "__main__":
-    asyncio.run(main())
-```
+### Cell 2: And now some examples:
 
-Both start before either finishes waiting. The final result is `['ONE', 'TWO']`: `gather` returns values in argument order, even if operations finish in a different order. Completion order generally depends on timing. Use this for independent requests; if the second requires the first result, sequential awaits are appropriate.
+Read this before the next code cell. If it contains an assignment, restate the expected result before writing code. External pages linked here have not been extracted.
 
-## Common mistakes in the source examples
+### Cell 3: code
 
-Calling an async function without awaiting or scheduling its coroutine does not execute its body and can produce an unawaited-coroutine warning. Forgetting `await` on `asyncio.sleep` removes the intended wait. Using `time.sleep` inside async code blocks the event loop, preventing other coroutines from progressing during that sleep.
+- Make available: `asyncio`. Imports do not by themselves perform the later model request, although imported modules can have initialization side effects.
+- Define `do_some_work()`. Its body runs when called; await/schedule the coroutine to execute async work.
+- `print`: Show diagnostic output; this does not replace returning a callback result.
+- `asyncio.sleep`: Pause. asyncio.sleep yields the loop; time.sleep blocks the current thread.
 
-## Practice
+**Pause:** which values does this cell require from earlier cells, and what value or side effect does it produce? Run the offline adaptation before the source.
 
-Add `work("three")` to `gather`. Expected final list: `['ONE', 'TWO', 'THREE']`. Then replace `gather` with three sequential awaits and observe the difference in the start/end messages. Do not infer a performance guarantee from this tiny timing simulation.
+### Cell 4: code
 
-## Instructor code, included here
+- Inspect the evaluated value or expression; displaying it does not necessarily modify state.
 
-These are the code examples from the local guide, in their original order, so you can compare the instructor's syntax with the explanations above without opening another file. These excerpts can depend on earlier definitions. The complete teaching examples above include their own inputs.
+**Pause:** which values does this cell require from earlier cells, and what value or side effect does it produce? Run the offline adaptation before the source.
 
-Source examples that intentionally fail, run indefinitely, download software, or contact a service are labeled below. Hosted configuration reads have been changed to your explicit `.environment/.env` path; credential values are never included.
+### Cell 5: code
 
-### And now some examples:
+- Inspect the evaluated value or expression; displaying it does not necessarily modify state.
 
-Notebook async example: await runs a coroutine; a bare call only creates it. The complete scripts above show where asyncio.run belongs.
+**Pause:** which values does this cell require from earlier cells, and what value or side effect does it produce? Run the offline adaptation before the source.
 
-```python
-# Let's define an async function
+### Cell 6: code
 
-import asyncio
+- Define `do_a_lot_of_work()`. Its body runs when called; await/schedule the coroutine to execute async work.
 
-async def do_some_work():
-    print("Starting work")
-    await asyncio.sleep(1)
-    print("Work complete")
-```
+**Pause:** which values does this cell require from earlier cells, and what value or side effect does it produce? Run the offline adaptation before the source.
 
-### And now some examples:
+### Cell 7: code
 
-Read the comments and follow each assignment to its next use. Any name not defined here comes from an earlier example in this section.
+- Define `do_a_lot_of_work()`. Its body runs when called; await/schedule the coroutine to execute async work.
 
-```python
-# What will this do?
+**Pause:** which values does this cell require from earlier cells, and what value or side effect does it produce? Run the offline adaptation before the source.
 
-do_some_work()
-```
+### Cell 8: code
 
-### And now some examples:
+- Define `do_a_lot_of_work_in_parallel()`. Its body runs when called; await/schedule the coroutine to execute async work.
+- `asyncio.gather`: Schedule independent coroutines; returned results follow input order.
 
-Notebook async example: await runs a coroutine; a bare call only creates it. The complete scripts above show where asyncio.run belongs.
+**Pause:** which values does this cell require from earlier cells, and what value or side effect does it produce? Run the offline adaptation before the source.
 
-```python
-# OK let's try that again!
+### Cell 9: Finally - try writing a python module that calls do_a_lot_of_work_in_parallel
 
-await do_some_work()
-```
+Read this before the next code cell. If it contains an assignment, restate the expected result before writing code. External pages linked here have not been extracted.
 
-### And now some examples:
+## Definitions to find
 
-Notebook async example: await runs a coroutine; a bare call only creates it. The complete scripts above show where asyncio.run belongs.
+| Cell | Name | Kind |
+| --- | --- | --- |
+| 3 | `do_some_work` | async function |
+| 6 | `do_a_lot_of_work` | async function |
+| 7 | `do_a_lot_of_work` | async function |
+| 8 | `do_a_lot_of_work_in_parallel` | async function |
 
-```python
-# What's wrong with this?
+## Finish check
 
-async def do_a_lot_of_work():
-    do_some_work()
-    do_some_work()
-    do_some_work()
+Explain the inputs, state changes, and stopping rule in your own words. Identify where model calls and external actions begin. A passing practice fixture does not prove the original hosted workflow works.
 
-await do_a_lot_of_work()
-```
-
-### And now some examples:
-
-Notebook async example: await runs a coroutine; a bare call only creates it. The complete scripts above show where asyncio.run belongs.
-
-```python
-# Interesting warning! Let's fix it
-
-async def do_a_lot_of_work():
-    await do_some_work()
-    await do_some_work()
-    await do_some_work()
-
-await do_a_lot_of_work()
-```
-
-### And now some examples:
-
-Notebook async example: await runs a coroutine; a bare call only creates it. The complete scripts above show where asyncio.run belongs.
-
-```python
-# And now let's do it in parallel
-# It's important to recognize that this is not "multi-threading" in the way that you may be used to
-# The asyncio library is running on a single thread, but it's using a loop to switch between tasks while one is waiting
-
-async def do_a_lot_of_work_in_parallel():
-    await asyncio.gather(do_some_work(), do_some_work(), do_some_work())
-
-await do_a_lot_of_work_in_parallel()
-```
-
-### Finally - try writing a python module that calls do_a_lot_of_work_in_parallel
-
-Read the comments and follow each assignment to its next use. Any name not defined here comes from an earlier example in this section.
-
-```python
-if __name__ == "__main__":
-    asyncio.run(do_a_lot_of_work_in_parallel())
-```
-
----
-
-Source: [11_async_python.ipynb](../../../../guides/11_async_python.ipynb). This lesson expands the locally documented topics with teaching examples; linked external briefings were not used as source contents.
-
-Optional: [practice notebook](practice.ipynb) · [all guide lessons](../README.md).
+[Explicit .environment/.env loading and troubleshooting](../../configuration.md)

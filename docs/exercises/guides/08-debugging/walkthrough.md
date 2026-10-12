@@ -1,72 +1,63 @@
-# 08 · Debug by finding the first wrong assumption
+# Reproduce and reduce failures
 
-Start with an exact input and an exact failure. Reduce the program until the failure fits in a small example. Then check the data at the failing operation. This is especially useful when a long agent workflow obscures a simple Python mistake.
+Source: [guides/08_debugging.ipynb](../../../../guides/08_debugging.ipynb). Practice: [commented notebook](practice.ipynb).
 
-## Reproduce an absent dictionary key
+Cell positions below count all cells, including Markdown. They are not execution counts. The map was extracted from local source cells, never their saved outputs.
 
-```python
-book = {"title": "Unknown author"}
-try:
-    print(book["author"])
-except KeyError as error:
-    print(type(error).__name__)
-    print("Available keys:", list(book))
-```
+## Follow the flow
 
-Output: `KeyError`, then `Available keys: ['title']`. The problem is the assumption that every book has an author. The exception is caught here so you can inspect it without stopping the exercise.
+Reproduce → simplify to a small case → inspect the exception → distinguish causes → fix and repeat the same case.
 
-Use a fallback only if a missing author is allowed:
+**Before source execution:** Linked remote debugging briefings are unverified. Catch only the expected exception in practice so unrelated errors remain visible.
 
-```python
-book = {"title": "Unknown author"}
-print(book.get("author", "Not supplied"))
-```
+Study one concept per sitting. Predict a value, run the corresponding practice cell, explain it, then change one input. If state becomes confusing, restart the practice kernel and run from the top.
 
-Output: `Not supplied`. If an author is mandatory, the appropriate fix is validation or correcting the input, rather than quietly supplying a fallback.
+## Concepts to understand
 
-## Check a value's type before using it
+### Reproduce, inspect, simplify, fix
 
-```python
-count = "3"  # Text, perhaps received from a form.
-print(type(count).__name__)
-number = int(count)
-print(number + 1)
-```
+A small failing case separates causes. Catch the exact exception in a teaching example so the notebook can continue, then implement a specific repair.
 
-Output: `str`, then `4`. Adding an integer directly to `"3"` would raise `TypeError`. `int` converts valid integer text; `int("three")` instead raises `ValueError`. These errors point to different assumptions: incompatible types versus invalid contents.
+**Ask yourself:** Will the original operation raise NameError or KeyError?
 
-## Read a traceback from the failing operation outward
+**Practice:** Remove the record definition in a scratch cell. Explain how the new NameError differs from the original missing-key error.
 
-A traceback names the exception and shows the calls leading to it. Locate the last relevant line in your own code, inspect its inputs, and check the caller that supplied them. A `NameError` means a name is unavailable in the current scope, often from spelling or notebook execution order. A `ModuleNotFoundError` means the running interpreter cannot import that module.
+### Configuration stays outside executable examples
 
-For an import problem, inspect the interpreter:
+Environment-variable names identify settings. Values belong in .environment/.env and are loaded deliberately. This exercise inspects only the path and simulated presence flags; it reads no private file or variable values.
 
-```python
-import sys
-print(sys.executable)
-```
+**Ask yourself:** Does finding a file prove that authentication works?
 
-Expected result is the path of the interpreter actually running the example. Compare it with the environment where you installed the package.
+**Practice:** Explain the difference between a missing file, a missing variable, and a provider rejecting authentication. Do not print token prefixes or values.
 
-## Write the regression check after the fix
+### Request, status, and parsed body
 
-```python
-def author_label(book):
-    return book.get("author", "Not supplied")
+An HTTP client sends a request and returns a status plus response body. Provider requests are network side effects; a fixture lets you practice handling success/failure without sending one.
 
-assert author_label({"title": "Unknown"}) == "Not supplied"
-assert author_label({"author": "Dickens"}) == "Dickens"
-print("Both cases passed")
-```
+**Ask yourself:** Will a non-200 response be treated as success here?
 
-Output: `Both cases passed`. The missing-field case prevents the original mistake from returning; the normal case ensures the fix did not break existing behavior.
+**Practice:** Add a 429 fixture and distinguish rate limiting from authentication. Explain why real calls need timeouts.
 
-## Practice
+## Follow the source in order
 
-What happens with `{"author": None}`? `.get` returns `None`, because the key exists. If your requirement says null should also use the fallback, implement `book.get("author") or "Not supplied"` and add a check for it. That expression also treats an empty string as missing; decide whether that matches your requirements.
+### Cell 1: Debugging Survival Guide
 
----
+Read this before the next code cell. If it contains an assignment, restate the expected result before writing code. External pages linked here have not been extracted.
 
-Source: [08_debugging.ipynb](../../../../guides/08_debugging.ipynb). This lesson expands the locally documented topics with teaching examples; linked external briefings were not used as source contents.
+### Cell 2: Preliminaries
 
-Optional: [practice notebook](practice.ipynb) · [all guide lessons](../README.md).
+Read this before the next code cell. If it contains an assignment, restate the expected result before writing code. External pages linked here have not been extracted.
+
+### Cell 3: Formula for debugging: recreate in 10 lines of code
+
+Read this before the next code cell. If it contains an assignment, restate the expected result before writing code. External pages linked here have not been extracted.
+
+### Cell 4: blank separator
+
+No execution needed.
+
+## Finish check
+
+Explain the inputs, state changes, and stopping rule in your own words. Identify where model calls and external actions begin. A passing practice fixture does not prove the original hosted workflow works.
+
+[Explicit .environment/.env loading and troubleshooting](../../configuration.md)

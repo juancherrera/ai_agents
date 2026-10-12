@@ -1,56 +1,67 @@
-# 07 · Use AI-generated code in small, checkable pieces
+# Build and check small pieces
 
-The guide's useful habit is to ask for a small result, inspect it, and test it before expanding the program. Treat generated code as a proposed implementation. You still need to understand what inputs it accepts and how you will know it works.
+Source: [guides/07_vibe_coding_and_debugging.ipynb](../../../../guides/07_vibe_coding_and_debugging.ipynb). Practice: [commented notebook](practice.ipynb).
 
-## Specify behavior before asking for code
+Cell positions below count all cells, including Markdown. They are not execution counts. The map was extracted from local source cells, never their saved outputs.
 
-Here is a concrete prompt you can reuse:
+## Follow the flow
 
-> Write a Python function `normalize_tags(text)` using only the standard library. Split comma-separated tags, trim outer whitespace, lowercase each tag, discard empty tags, and preserve duplicates and order. Show a short implementation and tests. Do not add a server, database, or API call. Explain each Python construct.
+Describe one small behavior → generate/propose a small implementation → reproduce a case → test it → extend incrementally.
 
-This gives the assistant boundaries and observable outcomes. Compare the returned code with this complete implementation:
+**Before source execution:** Generated code must be inspected and verified; receiving it is not evidence it works. Practice parses harmless text rather than executing generated programs.
 
-```python
-def normalize_tags(text):
-    tags = []
-    for part in text.split(","):
-        tag = part.strip().lower()
-        if tag:  # Empty strings are false in a condition.
-            tags.append(tag)
-    return tags
+Study one concept per sitting. Predict a value, run the corresponding practice cell, explain it, then change one input. If state becomes confusing, restart the practice kernel and run from the top.
 
-assert normalize_tags(" Python, AI, ,Python ") == ["python", "ai", "python"]
-assert normalize_tags("") == []
-print("Checks passed")
-```
+## Concepts to understand
 
-Output: `Checks passed`. Splitting creates candidate strings. Cleaning happens once per candidate. The condition removes empty ones. Appending preserves order and duplicates. `assert` raises an error if the claimed behavior is false; it is useful for these local learning checks.
+### Evaluate a small prototype with a fixed dataset
 
-## Compare a shorter version without changing behavior
+Choose a success measure before comparing approaches. Use a small curated set so you can reproduce failures. Scores below describe fictional fixtures, not real model performance.
 
-```python
-def normalize_tags(text):
-    return [part.strip().lower() for part in text.split(",") if part.strip()]
+**Ask yourself:** Which fixture scores better, and what does the score actually measure?
 
-assert normalize_tags(" Python, AI, ,Python ") == ["python", "ai", "python"]
-assert normalize_tags("") == []
-print("Same results")
-```
+**Practice:** Add a case where a correct paraphrase differs from the expected string. Explain why exact-match scoring may be insufficient.
 
-Output: `Same results`. The expression before `for` produces each output item. The expression after `if` decides whether to include it. Prefer the longer version while you are learning if it is easier to inspect. Fewer lines do not establish correctness.
+### Reproduce, inspect, simplify, fix
 
-## Expand only after a passing check
+A small failing case separates causes. Catch the exact exception in a teaching example so the notebook can continue, then implement a specific repair.
 
-If you want duplicates removed, first decide whether order should remain. Then add a test such as `assert normalize_tags("AI,Python,AI") == ["ai", "python"]`. The current implementations fail that new requirement, which tells you exactly what needs to change.
+**Ask yourself:** Will the original operation raise NameError or KeyError?
 
-Ask for one change at a time and keep the previous checks. When a generated answer imports an unfamiliar package or calls an external service, inspect why it needs that dependency before running it.
+**Practice:** Remove the record definition in a scratch cell. Explain how the new NameError differs from the original missing-key error.
 
-## Practice
+### Generated code is an output before it is execution
 
-Add a test for `" A , B "`. Expected list: `['a', 'b']`. Then deliberately change `.lower()` to `.upper()` and run the checks. The assertion failure demonstrates that the tests detect a real behavior change.
+A coding workflow designs, writes, and reviews code. Generated files or Docker execution are side effects. First inspect and validate a harmless code string locally.
 
----
+**Ask yourself:** Does parsing Python text execute it?
 
-Source: [07_vibe_coding_and_debugging.ipynb](../../../../guides/07_vibe_coding_and_debugging.ipynb). This lesson expands the locally documented topics with teaching examples; linked external briefings were not used as source contents.
+**Practice:** Write a test plan for the intended function. Explain which separate step would run code and where the source uses Docker.
 
-Optional: [practice notebook](practice.ipynb) · [all guide lessons](../README.md).
+## Follow the source in order
+
+### Cell 1: Vibe coding and debugging
+
+Read this before the next code cell. If it contains an assignment, restate the expected result before writing code. External pages linked here have not been extracted.
+
+### Cell 2: Explanation, context, or transition
+
+Read this before the next code cell. If it contains an assignment, restate the expected result before writing code. External pages linked here have not been extracted.
+
+### Cell 3: Vibe Coding for a larger project
+
+Read this before the next code cell. If it contains an assignment, restate the expected result before writing code. External pages linked here have not been extracted.
+
+### Cell 4: The golden rule: start small, work incrementally!
+
+Read this before the next code cell. If it contains an assignment, restate the expected result before writing code. External pages linked here have not been extracted.
+
+### Cell 5: blank separator
+
+No execution needed.
+
+## Finish check
+
+Explain the inputs, state changes, and stopping rule in your own words. Identify where model calls and external actions begin. A passing practice fixture does not prove the original hosted workflow works.
+
+[Explicit .environment/.env loading and troubleshooting](../../configuration.md)

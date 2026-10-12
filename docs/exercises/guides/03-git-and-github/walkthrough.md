@@ -1,77 +1,63 @@
-# 03 · Understand Git and GitHub by making a change
+# Working changes, staging, commits, and remotes
 
-Git records local snapshots of files. GitHub hosts repositories so people can share those snapshots. The workflow is: edit → inspect → stage the intended files → commit → push. A commit is local until you push it.
+Source: [guides/03_git_and_github.ipynb](../../../../guides/03_git_and_github.ipynb). Practice: [commented notebook](practice.ipynb).
 
-## Inspect the course repository
+Cell positions below count all cells, including Markdown. They are not execution counts. The map was extracted from local source cells, never their saved outputs.
 
-Run in PowerShell:
+## Follow the flow
 
-```powershell
-Set-Location 'C:\src\github_pub\ai_agents'
-git status --short
-git branch --show-current
-git remote -v
-git diff --stat
-```
+Inspect differences → select changes → inspect staged content → record snapshot → synchronize deliberate commits.
 
-`status` lists changed files; `M` means modified and `??` means untracked. `branch` tells you which line of work you are on. `remote` shows where fetch/push connect. `diff --stat` summarizes unstaged edits. These commands inspect state without changing your files.
+**Before source execution:** External linked Git briefings are unverified; practice does not mutate Git history.
 
-## Practice the full local workflow in a fresh repository
+Study one concept per sitting. Predict a value, run the corresponding practice cell, explain it, then change one input. If state becomes confusing, restart the practice kernel and run from the top.
 
-Run these commands together. They create a unique temporary folder and configure an identity only for that practice repository.
+## Concepts to understand
 
-```powershell
-$gitLesson = Join-Path ([System.IO.Path]::GetTempPath()) ('git-lesson-' + [guid]::NewGuid())
-New-Item -ItemType Directory -Path $gitLesson | Out-Null
-Set-Location $gitLesson
-git init -b main
-git config user.name 'Practice Student'
-git config user.email 'student@example.invalid'
-'First version' | Set-Content -LiteralPath 'notes.txt'
-git status --short
-git add notes.txt
-git diff --cached
-git commit -m 'Add first practice note'
-git log --oneline -1
-```
+### Inspect a snapshot before recording changes
 
-Before `add`, `notes.txt` is untracked. `add` places its current contents in the staging area: the proposed next snapshot. `diff --cached` lets you review that proposal. `commit` saves it with a message. The log shows a generated commit ID and `Add first practice note`; your ID will differ.
+Git distinguishes working files, staged changes, and committed snapshots. This model teaches the distinction without modifying repository history.
 
-## Make a second version on a branch
+**Ask yourself:** Which changes are recorded when only notes.md is staged?
 
-Continue in the same temporary repository:
+**Practice:** Use git status and git diff in PowerShell to inspect real state. Stage only files you intentionally want in a commit.
 
-```powershell
-git switch -c practice-change
-'Second version' | Set-Content -LiteralPath 'notes.txt'
-git diff
-git add notes.txt
-git commit -m 'Revise practice note'
-git switch main
-Get-Content notes.txt
-git merge --ff-only practice-change
-Get-Content notes.txt
-```
+### Working directory vs. source directory
 
-The branch starts at the existing commit. Editing and committing moves `practice-change` forward. Switching to `main` restores `First version`. The fast-forward merge moves `main` to the newer commit; the file now contains `Second version`. `--ff-only` refuses a merge requiring a new merge commit, so you can investigate diverged history first.
+Relative paths start at the process working directory. They do not automatically start next to a notebook. This example inspects paths only and never creates or deletes files.
 
-## Fetch, pull, and push in a real shared repository
+**Ask yourself:** What folder is the starting point for Path(".")?
 
-These are the command forms; use your actual branch name and review local changes first:
+**Practice:** Compare the path from the repository root with the path from a week folder. Explain why cd changes relative-file behavior.
 
-```powershell
-git fetch origin
-git log --oneline --max-count=5 origin/main
-```
+## Follow the source in order
 
-`fetch` downloads remote history without updating your working files. When you are on a clean `main`, `git pull --ff-only origin main` fetches and advances it if history allows. To share a committed feature branch, use `git push -u origin your-branch-name`; substitute a real branch name. A GitHub pull request then asks the repository owner to review and incorporate that branch. Pushing your branch does not itself create a pull request.
+### Cell 1: Git and Github
 
-## Practice
+Read this before the next code cell. If it contains an assignment, restate the expected result before writing code. External pages linked here have not been extracted.
 
-Create a third version in the temporary repository. Before committing, run both `git diff` and `git diff --cached`. Stage the file and run both again. The change moves from the first display to the second because staging chooses what the commit will contain.
+### Cell 2: Explanation, context, or transition
 
----
+Read this before the next code cell. If it contains an assignment, restate the expected result before writing code. External pages linked here have not been extracted.
 
-Source: [03_git_and_github.ipynb](../../../../guides/03_git_and_github.ipynb). This lesson expands the locally documented topics with teaching examples; linked external briefings were not used as source contents.
+### Cell 3: Foundational briefing
 
-Optional: [practice notebook](practice.ipynb) · [all guide lessons](../README.md).
+Read this before the next code cell. If it contains an assignment, restate the expected result before writing code. External pages linked here have not been extracted.
+
+### Cell 4: Pulling latest code
+
+Read this before the next code cell. If it contains an assignment, restate the expected result before writing code. External pages linked here have not been extracted.
+
+### Cell 5: Contributing your changes to the repo to share your contributions with others
+
+Read this before the next code cell. If it contains an assignment, restate the expected result before writing code. External pages linked here have not been extracted.
+
+### Cell 6: If you'd like to become a Git pro
+
+Read this before the next code cell. If it contains an assignment, restate the expected result before writing code. External pages linked here have not been extracted.
+
+## Finish check
+
+Explain the inputs, state changes, and stopping rule in your own words. Identify where model calls and external actions begin. A passing practice fixture does not prove the original hosted workflow works.
+
+[Explicit .environment/.env loading and troubleshooting](../../configuration.md)

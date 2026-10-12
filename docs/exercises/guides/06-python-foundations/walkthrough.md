@@ -1,93 +1,63 @@
-# 06 · Python foundations for someone who already codes
+# Python building blocks and NameErrors
 
-Python uses indentation for blocks, `def` for functions, and objects such as lists and dictionaries for everyday data. Run the examples independently; each includes its inputs.
+Source: [guides/06_python_foundations.ipynb](../../../../guides/06_python_foundations.ipynb). Practice: [commented notebook](practice.ipynb).
 
-## Functions, defaults, and formatted strings
+Cell positions below count all cells, including Markdown. They are not execution counts. The map was extracted from local source cells, never their saved outputs.
 
-```python
-def greet(name, greeting="Hello"):
-    # f before the quote allows expressions inside {braces}.
-    return f"{greeting}, {name}!"
+## Follow the flow
 
-print(greet("JC"))
-print(greet("JC", greeting="Welcome"))
-```
+Understand values/functions → distinguish collection types → identify what defines a name → reproduce and fix missing definitions.
 
-Output: `Hello, JC!` and `Welcome, JC!`. The default is used when the caller omits `greeting`. A keyword argument names the parameter explicitly. Use functions to give a repeated transformation a name and test it separately.
+**Before source execution:** The source mainly links external tutorials; those pages are unverified. These local exercises supply runnable practice for the named concepts.
 
-## Strings: clean, split, select, and join
+Study one concept per sitting. Predict a value, run the corresponding practice cell, explain it, then change one input. If state becomes confusing, restart the practice kernel and run from the top.
 
-```python
-text = "  apple,pear,banana  "
-clean = text.strip()            # Remove outer whitespace.
-parts = clean.split(",")       # Produce a list of three strings.
-print(parts[0])                 # First item.
-print(parts[1:])                # Slice from index 1 through the end.
-print(" | ".join(parts))        # Put a separator between items.
-print(clean.replace("pear", "plum"))
-```
+## Concepts to understand
 
-Output:
+### Variables, dictionaries, and functions
 
-```text
-apple
-['pear', 'banana']
-apple | pear | banana
-apple,plum,banana
-```
+A function consumes an input and returns a value. Dictionary lookup with get can handle optional fields. Comprehensions transform a collection.
 
-Slices use `[start:stop]`; the stop index is excluded. Strings are immutable: these methods return new strings instead of editing `text`. This matters when cleaning input before sending it to a model.
+**Ask yourself:** Which book has no author?
 
-## Lists, dictionaries, and sets
+**Practice:** Add another authored book. Collect unique authors with a set and explain how it differs from a list.
 
-```python
-names = ["Ada", "Linus", "Ada"]
-names.append("Grace")
-profile = {"name": "Ada", "language": "Python"}
-print(names[0])
-print(profile["language"])
-print(profile.get("city", "Unknown"))
-print(sorted(set(names)))
-```
+### Classes, methods, and generators
 
-Output: `Ada`, `Python`, `Unknown`, and `['Ada', 'Grace', 'Linus']`. A list keeps ordered items and duplicates. A dictionary associates keys with values. `.get` supplies a fallback for an absent key. A set removes duplicates; `sorted` gives the demonstration a predictable display order.
+A class bundles data and behavior. A method receives self, the current instance. A generator yields values as they are requested.
 
-## Read and write a file with automatic cleanup
+**Ask yourself:** Will the same author be yielded twice?
 
-```python
-from pathlib import Path
-from tempfile import TemporaryDirectory
+**Practice:** Add a book by another author. Explain why yield allows iteration to continue while return would end it.
 
-with TemporaryDirectory() as folder:
-    path = Path(folder) / "note.txt"
-    path.write_text("Practice, then explain.", encoding="utf-8")
-    print(path.read_text(encoding="utf-8"))
-```
+### Reproduce, inspect, simplify, fix
 
-Output: `Practice, then explain.` `with` manages a resource; here the temporary folder is removed when the block ends. `/` combines `Path` components. Explicit UTF-8 avoids relying on the machine's default encoding.
+A small failing case separates causes. Catch the exact exception in a teaching example so the notebook can continue, then implement a specific repair.
 
-## Classes keep related data and behavior together
+**Ask yourself:** Will the original operation raise NameError or KeyError?
 
-```python
-class Book:
-    def __init__(self, title):
-        self.title = title  # Store data on this particular object.
+**Practice:** Remove the record definition in a scratch cell. Explain how the new NameError differs from the original missing-key error.
 
-    def describe(self):
-        return f"Book: {self.title}"
+## Follow the source in order
 
-book = Book("Moby Dick")
-print(book.describe())
-```
+### Cell 1: Foundations of Python and fixing NameErrors
 
-Output: `Book: Moby Dick`. `__init__` initializes an instance. `self` refers to that instance; Python supplies it when you call `book.describe()`. `self.title` is an instance field, unlike a temporary local variable named `title`.
+Read this before the next code cell. If it contains an assignment, restate the expected result before writing code. External pages linked here have not been extracted.
 
-## Practice
+### Cell 2: Next: a comprehensive briefing on Python
 
-Give `Book` an `author` parameter and store it in `self.author`. Change `describe` to include the author. For `Book("Moby Dick", "Herman Melville")`, aim for `Moby Dick by Herman Melville`.
+Read this before the next code cell. If it contains an assignment, restate the expected result before writing code. External pages linked here have not been extracted.
 
----
+### Cell 3: With this in mind - understanding NameErrors in Python
 
-Source: [06_python_foundations.ipynb](../../../../guides/06_python_foundations.ipynb). This lesson expands the locally documented topics with teaching examples; linked external briefings were not used as source contents.
+Read this before the next code cell. If it contains an assignment, restate the expected result before writing code. External pages linked here have not been extracted.
 
-Optional: [practice notebook](practice.ipynb) · [all guide lessons](../README.md).
+### Cell 4: blank separator
+
+No execution needed.
+
+## Finish check
+
+Explain the inputs, state changes, and stopping rule in your own words. Identify where model calls and external actions begin. A passing practice fixture does not prove the original hosted workflow works.
+
+[Explicit .environment/.env loading and troubleshooting](../../configuration.md)
